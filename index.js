@@ -1,6 +1,6 @@
 const express = require("express")
 const cors = require("cors")
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require("dotenv").config()
 const app = express()
 const port = process.env.PORT || 5000
@@ -15,6 +15,7 @@ async function run() {
   try{
     const employeesCollection = client.db('performTracker').collection('employees')
 
+    // get all employees
     app.get('/employees', async (req, res) => {
       // create dummy data
       // const employees = [
@@ -38,10 +39,45 @@ async function run() {
       res.send(employees)
     })
 
+    // get an employee by id
+    app.get('/employees/:id', async (req, res) => {
+      const {id} = req.params
+      const query = {_id: ObjectId(id)}
+
+      const result = await employeesCollection.deleteOne(query)
+
+      res.send(result)
+    })
+
+    // create a new employee
     app.post('/employees', async (req, res) => {
       const employee = req.body
 
       const result = await employeesCollection.insertOne(employee)
+
+      res.send(result)
+    })
+
+    // update an employee by id
+    app.patch('/employees/:id', async (req, res) => {
+      const {id} = req.params
+      const updateInfo = req.body
+
+      const query = {_id: ObjectId(id)}
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await employeesCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+    })
+
+    // delete an employee by id
+    app.delete('/employees/:id', async (req, res) => {
+      const {id} = req.params
+      const query = {_id: ObjectId(id)}
+
+      const result = await employeesCollection.deleteOne(query)
 
       res.send(result)
     })
