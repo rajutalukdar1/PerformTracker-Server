@@ -17,22 +17,6 @@ async function run() {
 
     // get all employees
     app.get('/employees', async (req, res) => {
-      // create dummy data
-      // const employees = [
-      //   {
-      //     name: "Jabed",
-      //     salary: 30000
-      //   },
-      //   {
-      //     name: "Sagor",
-      //     salary: 30000
-      //   },
-      // ]
-
-      // const result = await employeesCollection.insertMany(employees)
-
-      // res.send(result)
-
       const query = {}
       const employees = await employeesCollection.find(query).toArray()
 
@@ -45,14 +29,12 @@ async function run() {
       const query = { _id: ObjectId(id) }
 
       const result = await employeesCollection.findOne(query)
-
       res.send(result)
     })
 
     // create a new employee
     app.post('/employees', async (req, res) => {
       const employee = req.body
-
       const result = await employeesCollection.insertOne(employee)
 
       res.send(result)
