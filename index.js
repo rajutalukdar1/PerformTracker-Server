@@ -14,7 +14,24 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
   try {
     const employeesCollection = client.db('performTracker').collection('employees')
+    const clientCollection = client.db('performTracker').collection('clients');
 
+
+    // get all Clients
+    app.get('/clients', async (req, res) => {
+      const query = {}
+      const cursor = clientCollection.find(query);
+      const services = await cursor.limit(9).toArray();
+      res.send(services);
+    });
+    // 
+    // get an client by id
+    app.get('/clients/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const service = await clientCollection.findOne(query);
+      res.send(service);
+    });
     // get all employees
     app.get('/employees', async (req, res) => {
       const query = {}
