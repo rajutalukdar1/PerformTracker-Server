@@ -15,6 +15,7 @@ async function run() {
   try {
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
+    const blogsCollection = client.db('performTracker').collection('blogs');
 
 
     // get all Clients
@@ -32,6 +33,9 @@ async function run() {
       const service = await clientCollection.findOne(query);
       res.send(service);
     });
+
+
+    /* ------ Employee ------- */
     // get all employees
     app.get('/employees', async (req, res) => {
       const query = {}
@@ -80,6 +84,33 @@ async function run() {
 
       res.send(result)
     })
+
+    /* ------ Blog ------- */
+    // get all Blogs
+    app.get('/blogs', async (req, res) => {
+      const query = {}
+      const blogs = await blogsCollection.find(query).toArray()
+
+      res.send(blogs)
+    })
+
+    // get a blog by id
+    app.get('/blogs/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const blog = await blogsCollection.findOne(query)
+      res.send(blog)
+    })
+
+    // create a new blog
+    app.post('/blogs', async (req, res) => {
+      const blog = req.body
+      const result = await blogsCollection.insertOne(blog)
+
+      res.send(result)
+    })
+
 
   } finally { }
 }
