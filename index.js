@@ -12,10 +12,9 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run() {
-  try{
+  try {
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
-
 
     // get all Clients
     app.get('/clients', async (req, res) => {
@@ -23,7 +22,7 @@ async function run() {
       const cursor = clientCollection.find(query);
       const services = await cursor.limit(9).toArray();
       res.send(services);
-  });
+    });
     // 
     // get an client by id
     app.get('/clients/:id', async (req, res) => {
@@ -31,22 +30,20 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const service = await clientCollection.findOne(query);
       res.send(service);
-  });
+    });
     // get all employees
     app.get('/employees', async (req, res) => {
       const query = {}
       const employees = await employeesCollection.find(query).toArray()
-
       res.send(employees)
     })
 
     // get an employee by id
     app.get('/employees/:id', async (req, res) => {
-      const {id} = req.params
-      const query = {_id: ObjectId(id)}
-
-      const result = await employeesCollection.findOne(query)
-      res.send(result)
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await employeesCollection.findOne(query);
+      res.send(result);
     })
 
     // create a new employee
@@ -59,10 +56,10 @@ async function run() {
 
     // update an employee by id
     app.patch('/employees/:id', async (req, res) => {
-      const {id} = req.params
+      const { id } = req.params
       const updateInfo = req.body
 
-      const query = {_id: ObjectId(id)}
+      const query = { _id: ObjectId(id) }
       const updatedDoc = {
         $set: updateInfo
       }
@@ -73,15 +70,15 @@ async function run() {
 
     // delete an employee by id
     app.delete('/employees/:id', async (req, res) => {
-      const {id} = req.params
-      const query = {_id: ObjectId(id)}
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
 
       const result = await employeesCollection.deleteOne(query)
 
       res.send(result)
     })
 
-  }finally{}
+  } finally { }
 }
 
 run().catch(err => console.error(err))
@@ -90,6 +87,6 @@ app.get("/", (req, res) => {
   res.send("PerformTracker Server is running")
 })
 
-app.listen(port , () => {
+app.listen(port, () => {
   console.log("Server is running on port", port);
 })
