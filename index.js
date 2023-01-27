@@ -16,6 +16,7 @@ async function run() {
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
     const blogsCollection = client.db('performTracker').collection('blogs');
+    const projectsCollection = client.db('performTracker').collection('projects');
 
 
     // get all Clients
@@ -109,6 +110,14 @@ async function run() {
       const result = await blogsCollection.insertOne(blog)
 
       res.send(result)
+    })
+
+    // get all employees
+    app.get('/projects', async (req, res) => {
+      const query = {}
+      const projects = await projectsCollection.find(query).toArray()
+
+      res.send(projects)
     })
 
 
