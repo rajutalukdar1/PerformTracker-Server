@@ -15,13 +15,20 @@ async function run() {
   try {
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
+    
 
-
+    // get client post
+    app.post('/clients', async(req, res) =>{
+      const user = req.body;
+      console.log(user);
+      const result = await clientCollection.insertOne(user)
+      res.send(result);
+  })
     // get all Clients
     app.get('/clients', async (req, res) => {
       const query = {}
-      const cursor = clientCollection.find(query);
-      const services = await cursor.limit(9).toArray();
+      const cursor =  clientCollection.find(query).sort({_id:-1});
+      const services = await cursor.toArray();
       res.send(services);
     });
     // 
