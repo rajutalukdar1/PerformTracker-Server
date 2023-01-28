@@ -5,6 +5,7 @@ require("dotenv").config()
 const app = express()
 const port = process.env.PORT || 5000
 
+// Middlewares
 app.use(cors())
 app.use(express.json())
 
@@ -16,8 +17,9 @@ async function run() {
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
     const blogsCollection = client.db('performTracker').collection('blogs');
+    const projectsCollection = client.db('performTracker').collection('projects');
 
-
+    /* ------ 🤝Clients🤝 ------- */
     // get all Clients
     app.get('/clients', async (req, res) => {
       const query = {}
@@ -25,7 +27,7 @@ async function run() {
       const services = await cursor.limit(9).toArray();
       res.send(services);
     });
-    // 
+
     // get an client by id
     app.get('/clients/:id', async (req, res) => {
       const id = req.params.id;
@@ -35,7 +37,7 @@ async function run() {
     });
 
 
-    /* ------ Employee ------- */
+    /* ------ 🧑‍💼Employees🧑‍💼 ------- */
     // get all employees
     app.get('/employees', async (req, res) => {
       const query = {}
@@ -85,7 +87,7 @@ async function run() {
       res.send(result)
     })
 
-    /* ------ Blog ------- */
+    /* ------ 📝Blogs📝 ------- */
     // get all Blogs
     app.get('/blogs', async (req, res) => {
       const query = {}
@@ -107,6 +109,81 @@ async function run() {
     app.post('/blogs', async (req, res) => {
       const blog = req.body
       const result = await blogsCollection.insertOne(blog)
+
+      res.send(result)
+    })
+
+    // update an blog by id
+    app.patch('/blogs/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await blogsCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+    })
+
+    // delete an blog by id
+    app.delete('/blogs/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await blogsCollection.deleteOne(query)
+
+      res.send(result)
+    })
+
+
+    /* ------ 🚀Projects🚀 ------- */
+    // get all projects
+    app.get('/projects', async (req, res) => {
+      const query = {}
+      const projects = await projectsCollection.find(query).toArray()
+
+      res.send(projects)
+    })
+
+    // get an project by id
+    app.get('/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await projectsCollection.findOne(query)
+      res.send(result)
+    })
+
+    // create a new project
+    app.post('/projects', async (req, res) => {
+      const project = req.body
+      const result = await projectsCollection.insertOne(project)
+
+      res.send(result)
+    })
+
+    // update an project by id
+    app.patch('/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await projectsCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+    })
+
+    // delete an project by id
+    app.delete('/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await projectsCollection.deleteOne(query)
 
       res.send(result)
     })
