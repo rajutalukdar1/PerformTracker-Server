@@ -50,7 +50,7 @@ async function run() {
     // get all Clients
     app.get('/clients', async (req, res) => {
       const query = {}
-      const cursor =  clientCollection.find(query).sort({_id:-1});
+      const cursor = clientCollection.find(query).sort({ _id: -1 });
       const services = await cursor.toArray();
       res.send(services);
     });
@@ -67,7 +67,6 @@ async function run() {
     app.get('/employees', async (req, res) => {
       const query = {}
       const employees = await employeesCollection.find(query).toArray()
-
       res.send(employees)
     })
 
@@ -110,7 +109,16 @@ async function run() {
       const result = await employeesCollection.deleteOne(query)
 
       res.send(result)
-    })
+    });
+
+    // get an employee by email
+    app.get('/employee', async (req, res) => {
+      const { email } = req.query
+      const query = { email }
+
+      const result = await employeesCollection.findOne(query)
+      res.send(result)
+    });
 
     /* ------ 📝Blogs📝 ------- */
     // get all Blogs
@@ -242,7 +250,17 @@ async function run() {
         $set: updateInfo
       }
       const result = await usersCollection.updateOne(query, updatedDoc)
-
+    })
+    
+    // get employees projects
+    app.get('/employee/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const query = {
+        $or: [{ team: { $elemMatch: { uid: id } } }, {
+          assignedleaders: { $elemMatch: { uid: id } }
+        }]
+      }
+      const result = await projectsCollection.find(query).toArray();
       res.send(result)
     })
 
