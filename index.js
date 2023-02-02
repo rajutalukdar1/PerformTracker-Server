@@ -17,18 +17,43 @@ async function run() {
     const usersCollection = client.db('performTracker').collection('users')
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
+    const taskCollection = client.db('performTracker').collection('task');
     const blogsCollection = client.db('performTracker').collection('blogs');
     const projectsCollection = client.db('performTracker').collection('projects');
+    
+
+    // get all task
+    app.get('/task', async (req, res) => {
+      const query = {}
+      const task = await taskCollection.find(query).toArray()
+
+      res.send(task)
+    })
+
+    // get task post
+    app.post('/task', async(req, res) =>{
+      const user = req.body;
+      console.log(user);
+      const result = await taskCollection.insertOne(user)
+      res.send(result);
+  })
+    // get client post
+    app.post('/clients', async(req, res) =>{
+      const user = req.body;
+      console.log(user);
+      const result = await clientCollection.insertOne(user)
+      res.send(result);
+  })
+    
 
     /* ------ 🤝Clients🤝 ------- */
     // get all Clients
     app.get('/clients', async (req, res) => {
       const query = {}
-      const cursor = clientCollection.find(query);
-      const services = await cursor.limit(9).toArray();
+      const cursor =  clientCollection.find(query).sort({_id:-1});
+      const services = await cursor.toArray();
       res.send(services);
     });
-
     // get an client by id
     app.get('/clients/:id', async (req, res) => {
       const id = req.params.id;
