@@ -14,6 +14,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run() {
   try {
+    const usersCollection = client.db('performTracker').collection('users')
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
     const blogsCollection = client.db('performTracker').collection('blogs');
@@ -35,7 +36,6 @@ async function run() {
       const service = await clientCollection.findOne(query);
       res.send(service);
     });
-
 
     /* ------ 🧑‍💼Employees🧑‍💼 ------- */
     // get all employees
@@ -184,6 +184,39 @@ async function run() {
       const query = { _id: ObjectId(id) }
 
       const result = await projectsCollection.deleteOne(query)
+
+      res.send(result)
+    })
+
+    /* ------ 👷‍♀️👷‍♂️👨‍💼Users👷‍♀️👷‍♂️👨‍💼 ------- */
+    // get user
+    app.get('/users', async (req, res) => {
+      const {uid} = req.query
+      const query = {uid}
+      const user = await usersCollection.findOne(query) || {}
+
+      console.log(user)
+      res.send(user)
+    })
+
+    // create a new user
+    app.post('/users', async (req, res) => {
+      const user = req.body
+      const result = await usersCollection.insertOne(user)
+
+      res.send(result)
+    })
+
+    // update an user by id
+    app.patch('/users/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await usersCollection.updateOne(query, updatedDoc)
 
       res.send(result)
     })
