@@ -16,11 +16,19 @@ async function run() {
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
 
+
+    // get client post
+    app.post('/clients', async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const result = await clientCollection.insertOne(user)
+      res.send(result);
+    })
     // get all Clients
     app.get('/clients', async (req, res) => {
       const query = {}
-      const cursor = clientCollection.find(query);
-      const services = await cursor.limit(9).toArray();
+      const cursor = clientCollection.find(query).sort({ _id: -1 });
+      const services = await cursor.toArray();
       res.send(services);
     });
     // 
@@ -40,10 +48,11 @@ async function run() {
 
     // get an employee by id
     app.get('/employees/:id', async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: ObjectId(id) };
-      const result = await employeesCollection.findOne(query);
-      res.send(result);
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await employeesCollection.findOne(query)
+      res.send(result)
     })
 
     // create a new employee
@@ -76,7 +85,15 @@ async function run() {
       const result = await employeesCollection.deleteOne(query)
 
       res.send(result)
-    })
+    });
+
+    app.get('/employee', async (req, res) => {
+      const { email } = req.query
+      const query = { email }
+
+      const result = await employeesCollection.findOne(query)
+      res.send(result)
+    });
 
   } finally { }
 }
