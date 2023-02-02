@@ -5,6 +5,7 @@ require("dotenv").config()
 const app = express()
 const port = process.env.PORT || 5000
 
+// Middlewares
 app.use(cors())
 app.use(express.json())
 
@@ -13,10 +14,29 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run() {
   try {
+    const usersCollection = client.db('performTracker').collection('users')
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
+    const taskCollection = client.db('performTracker').collection('task');
     const blogsCollection = client.db('performTracker').collection('blogs');
+    const projectsCollection = client.db('performTracker').collection('projects');
 
+
+    // get all task
+    app.get('/task', async (req, res) => {
+      const query = {}
+      const task = await taskCollection.find(query).toArray()
+
+      res.send(task)
+    })
+
+    // get task post
+    app.post('/task', async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const result = await taskCollection.insertOne(user)
+      res.send(result);
+    })
     // get client post
     app.post('/clients', async (req, res) => {
       const user = req.body;
@@ -24,6 +44,9 @@ async function run() {
       const result = await clientCollection.insertOne(user)
       res.send(result);
     })
+
+
+    /* ------ 🤝Clients🤝 ------- */
     // get all Clients
     app.get('/clients', async (req, res) => {
       const query = {}
@@ -31,7 +54,6 @@ async function run() {
       const services = await cursor.toArray();
       res.send(services);
     });
-    // 
     // get an client by id
     app.get('/clients/:id', async (req, res) => {
       const id = req.params.id;
@@ -40,13 +62,11 @@ async function run() {
       res.send(service);
     });
 
-
-    /* ------ Employee ------- */
+    /* ------ 🧑‍💼Employees🧑‍💼 ------- */
     // get all employees
     app.get('/employees', async (req, res) => {
       const query = {}
       const employees = await employeesCollection.find(query).toArray()
-
       res.send(employees)
     })
 
@@ -89,9 +109,18 @@ async function run() {
       const result = await employeesCollection.deleteOne(query)
 
       res.send(result)
-    })
+    });
 
-    /* ------ Blog ------- */
+    // get an employee by email
+    app.get('/employee', async (req, res) => {
+      const { email } = req.query
+      const query = { email }
+
+      const result = await employeesCollection.findOne(query)
+      res.send(result)
+    });
+
+    /* ------ 📝Blogs📝 ------- */
     // get all Blogs
     app.get('/blogs', async (req, res) => {
       const query = {}
@@ -114,6 +143,124 @@ async function run() {
       const blog = req.body
       const result = await blogsCollection.insertOne(blog)
 
+      res.send(result)
+    })
+
+    // update an blog by id
+    app.patch('/blogs/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await blogsCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+    })
+
+    // delete an blog by id
+    app.delete('/blogs/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await blogsCollection.deleteOne(query)
+
+      res.send(result)
+    })
+
+
+    /* ------ 🚀Projects🚀 ------- */
+    // get all projects
+    app.get('/projects', async (req, res) => {
+      const query = {}
+      const projects = await projectsCollection.find(query).toArray()
+
+      res.send(projects)
+    })
+
+    // get an project by id
+    app.get('/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await projectsCollection.findOne(query)
+      res.send(result)
+    })
+
+    // create a new project
+    app.post('/projects', async (req, res) => {
+      const project = req.body
+      const result = await projectsCollection.insertOne(project)
+
+      res.send(result)
+    })
+
+    // update an project by id
+    app.patch('/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await projectsCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+    })
+
+    // delete an project by id
+    app.delete('/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await projectsCollection.deleteOne(query)
+
+      res.send(result)
+    })
+
+    /* ------ 👷‍♀️👷‍♂️👨‍💼Users👷‍♀️👷‍♂️👨‍💼 ------- */
+    // get user
+    app.get('/users', async (req, res) => {
+      const { uid } = req.query
+      const query = { uid }
+      const user = await usersCollection.findOne(query) || {}
+
+      console.log(user)
+      res.send(user)
+    })
+
+    // create a new user
+    app.post('/users', async (req, res) => {
+      const user = req.body
+      const result = await usersCollection.insertOne(user)
+
+      res.send(result)
+    })
+
+    // update an user by id
+    app.patch('/users/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await usersCollection.updateOne(query, updatedDoc)
+    })
+
+    // get employees projects
+    app.get('/employee/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const query = {
+        $or: [{ team: { $elemMatch: { uid: id } } }, {
+          assignedleaders: { $elemMatch: { uid: id } }
+        }]
+      }
+      const result = await projectsCollection.find(query).toArray();
       res.send(result)
     })
 
