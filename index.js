@@ -14,6 +14,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run() {
   try {
+    const usersCollection = client.db('performTracker').collection('users')
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
     const taskCollection = client.db('performTracker').collection('task');
@@ -49,7 +50,7 @@ async function run() {
     // get all Clients
     app.get('/clients', async (req, res) => {
       const query = {}
-      const cursor =  clientCollection.find(query).sort({_id:-1});
+      const cursor = clientCollection.find(query).sort({ _id: -1 });
       const services = await cursor.toArray();
       res.send(services);
     });
@@ -61,13 +62,11 @@ async function run() {
       res.send(service);
     });
 
-
     /* ------ 🧑‍💼Employees🧑‍💼 ------- */
     // get all employees
     app.get('/employees', async (req, res) => {
       const query = {}
       const employees = await employeesCollection.find(query).toArray()
-
       res.send(employees)
     })
 
@@ -110,7 +109,16 @@ async function run() {
       const result = await employeesCollection.deleteOne(query)
 
       res.send(result)
-    })
+    });
+
+    // get an employee by email
+    app.get('/employee', async (req, res) => {
+      const { email } = req.query
+      const query = { email }
+
+      const result = await employeesCollection.findOne(query)
+      res.send(result)
+    });
 
     /* ------ 📝Blogs📝 ------- */
     // get all Blogs
@@ -210,6 +218,49 @@ async function run() {
 
       const result = await projectsCollection.deleteOne(query)
 
+      res.send(result)
+    })
+
+    /* ------ 👷‍♀️👷‍♂️👨‍💼Users👷‍♀️👷‍♂️👨‍💼 ------- */
+    // get user
+    app.get('/users', async (req, res) => {
+      const {uid} = req.query
+      const query = {uid}
+      const user = await usersCollection.findOne(query) || {}
+
+      console.log(user)
+      res.send(user)
+    })
+
+    // create a new user
+    app.post('/users', async (req, res) => {
+      const user = req.body
+      const result = await usersCollection.insertOne(user)
+
+      res.send(result)
+    })
+
+    // update an user by id
+    app.patch('/users/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await usersCollection.updateOne(query, updatedDoc)
+    })
+    
+    // get employees projects
+    app.get('/employee/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const query = {
+        $or: [{ team: { $elemMatch: { uid: id } } }, {
+          assignedleaders: { $elemMatch: { uid: id } }
+        }]
+      }
+      const result = await projectsCollection.find(query).toArray();
       res.send(result)
     })
 
