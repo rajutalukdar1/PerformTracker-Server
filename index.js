@@ -35,6 +35,28 @@ async function run() {
       res.send(service);
     });
 
+    // find each the client in email
+    app.get('/client', async (req, res) => {
+      const { email } = req.query
+      const query = { email }
+
+      const result = await clientCollection.findOne(query)
+      res.send(result)
+    });
+
+
+    app.get('/client/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const query = {
+        clientId: id
+        // $or: [{ team: { $elemMatch: { uid: id } } }, {
+        //   assignedleaders: { $elemMatch: { uid: id } }
+        // }]
+      }
+      const result = await projectsCollection.find(query).toArray();
+      res.send(result)
+    });
+
 
     /* ------ 🧑‍💼Employees🧑‍💼 ------- */
     // get all employees
@@ -81,10 +103,10 @@ async function run() {
       const query = { _id: ObjectId(id) }
 
       const result = await employeesCollection.deleteOne(query)
-
       res.send(result)
     });
 
+    // find each the employee in email
     app.get('/employee', async (req, res) => {
       const { email } = req.query
       const query = { email }
@@ -92,6 +114,8 @@ async function run() {
       const result = await employeesCollection.findOne(query)
       res.send(result)
     });
+
+
     /* ------ 📝Blogs📝 ------- */
     // get all Blogs
     app.get('/blogs', async (req, res) => {
@@ -99,7 +123,7 @@ async function run() {
       const blogs = await blogsCollection.find(query).toArray()
 
       res.send(blogs)
-    })
+    });
 
     // get a blog by id
     app.get('/blogs/:id', async (req, res) => {
@@ -108,7 +132,7 @@ async function run() {
 
       const blog = await blogsCollection.findOne(query)
       res.send(blog)
-    })
+    });
 
     // create a new blog
     app.post('/blogs', async (req, res) => {
@@ -116,7 +140,7 @@ async function run() {
       const result = await blogsCollection.insertOne(blog)
 
       res.send(result)
-    })
+    });
 
     // update an blog by id
     app.patch('/blogs/:id', async (req, res) => {
@@ -130,7 +154,7 @@ async function run() {
       const result = await blogsCollection.updateOne(query, updatedDoc)
 
       res.send(result)
-    })
+    });
 
     // delete an blog by id
     app.delete('/blogs/:id', async (req, res) => {
@@ -140,8 +164,7 @@ async function run() {
       const result = await blogsCollection.deleteOne(query)
 
       res.send(result)
-    })
-
+    });
 
     /* ------ 🚀Projects🚀 ------- */
     // get all projects
@@ -150,7 +173,7 @@ async function run() {
       const projects = await projectsCollection.find(query).toArray()
 
       res.send(projects)
-    })
+    });
 
     // get an project by id
     app.get('/projects/:id', async (req, res) => {
@@ -159,7 +182,7 @@ async function run() {
 
       const result = await projectsCollection.findOne(query)
       res.send(result)
-    })
+    });
 
     // create a new project
     app.post('/projects', async (req, res) => {
@@ -167,7 +190,7 @@ async function run() {
       const result = await projectsCollection.insertOne(project)
 
       res.send(result)
-    })
+    });
 
     // update an project by id
     app.patch('/projects/:id', async (req, res) => {
@@ -181,7 +204,7 @@ async function run() {
       const result = await projectsCollection.updateOne(query, updatedDoc)
 
       res.send(result)
-    })
+    });
 
     // delete an project by id
     app.delete('/projects/:id', async (req, res) => {
@@ -191,7 +214,7 @@ async function run() {
       const result = await projectsCollection.deleteOne(query)
 
       res.send(result)
-    })
+    });
 
     app.get('/employee/projects/:id', async (req, res) => {
       const { id } = req.params
@@ -202,7 +225,7 @@ async function run() {
       }
       const result = await projectsCollection.find(query).toArray();
       res.send(result)
-    })
+    });
 
 
   } finally { }
