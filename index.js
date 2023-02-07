@@ -33,7 +33,6 @@ async function run() {
     // get task post
     app.post('/task', async(req, res) =>{
       const user = req.body;
-      console.log(user);
       const result = await taskCollection.insertOne(user)
       res.send(result);
   })
@@ -50,7 +49,6 @@ async function run() {
     // get client post
     app.post('/clients', async(req, res) =>{
       const user = req.body;
-      console.log(user);
       const result = await clientCollection.insertOne(user)
       res.send(result);
   })
@@ -258,8 +256,6 @@ async function run() {
       const {uid} = req.query
       const query = {uid}
       const user = await usersCollection.findOne(query) || {}
-
-      console.log(user)
       res.send(user)
     })
 
@@ -281,6 +277,22 @@ async function run() {
         $set: updateInfo
       }
       const result = await usersCollection.updateOne(query, updatedDoc)
+      
+      res.send(result)
+    })
+
+    // update an user by uid
+    app.patch('/users', async (req, res) => {
+      const { uid } = req.query
+      const updateInfo = req.body
+
+      const query = { uid }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await usersCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
     })
     
     // get employees projects
@@ -293,6 +305,24 @@ async function run() {
       }
       const result = await projectsCollection.find(query).toArray();
       res.send(result)
+    });
+
+    // get admin
+    app.get('/users/admin', async (req, res) => {
+      const { uid } = req.query
+      const query = { uid, role: "Admin" }
+
+      const result = await usersCollection.findOne(query)
+      res.send({isAdmin: !!result})
+    });
+
+    // get client
+    app.get('/users/client', async (req, res) => {
+      const { uid } = req.query
+      const query = { uid, role: "Client" }
+
+      const result = await usersCollection.findOne(query)
+      res.send({isClient: !!result})
     });
 
 
