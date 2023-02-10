@@ -23,7 +23,49 @@ async function run() {
     const trainingCollection = client.db('performTracker').collection('training')
     const trainingTypeCollection = client.db('performTracker').collection('trainingType')
     const trainerCollection = client.db('performTracker').collection('trainer')
+    const promotionCollection = client.db('performTracker').collection('promotion');
     
+
+    // get all task
+    app.get('/promotion', async (req, res) => {
+      const query = {}
+      const task = promotionCollection.find(query).sort({_id:-1});
+      const services = await task.toArray();
+
+      res.send(services)
+    })
+
+    // get task post
+    app.post('/promotion', async(req, res) =>{
+      const user = req.body;
+      console.log(user);
+      const result = await promotionCollection.insertOne(user)
+      res.send(result);
+  })
+
+  // get promotion delete
+    app.delete('/promotion/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await promotionCollection.deleteOne(query)
+
+      res.send(result)
+    })
+
+    // update a task by id
+    app.patch('/promotion/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await promotionCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+      
+    })
 
     // get all task
     app.get('/task', async (req, res) => {
@@ -39,6 +81,19 @@ async function run() {
       const result = await taskCollection.insertOne(user)
       res.send(result);
   })
+  // update a task by id
+    app.patch('/task/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await taskCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+      
+    })
 
   // get task delete
     app.delete('/task/:id', async (req, res) => {
