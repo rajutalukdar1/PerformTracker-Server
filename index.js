@@ -25,9 +25,10 @@ async function run() {
     // get all task
     app.get('/promotion', async (req, res) => {
       const query = {}
-      const task = await promotionCollection.find(query).toArray()
+      const task = promotionCollection.find(query).sort({_id:-1});
+      const services = await task.toArray();
 
-      res.send(task)
+      res.send(services)
     })
 
     // get task post
