@@ -20,6 +20,9 @@ async function run() {
     const taskCollection = client.db('performTracker').collection('task');
     const blogsCollection = client.db('performTracker').collection('blogs');
     const projectsCollection = client.db('performTracker').collection('projects');
+    const trainingCollection = client.db('performTracker').collection('training')
+    const trainingTypeCollection = client.db('performTracker').collection('trainingType')
+    const trainerCollection = client.db('performTracker').collection('trainer')
     
 
     // get all task
@@ -266,6 +269,183 @@ async function run() {
 
       res.send(result)
     })
+    /* ------ 🧑‍💼Trining List🧑‍💼 ------- */
+    // get all trainig list
+    app.get('/training', async(req, res)=>{
+      const query = {}
+      const training = await trainingCollection.find(query).toArray()
+      res.send(training)
+     })
+     app.post('/training', async(req, res)=>{
+      const query = req.body
+      const training = await trainingCollection.insertOne(query)
+      res.send(training)
+     })
+    /* ------ 🧑‍💼Trining🧑‍💼 ------- */
+    // get all Triner
+     app.get('/trainer', async(req, res)=>{
+      const query = {}
+      const trainer = await trainerCollection.find(query).toArray()
+      res.send(trainer)
+     })
+     app.post('/trainer', async(req, res)=>{
+      const query = req.body
+      const trainer = await trainerCollection.insertOne(query)
+      res.send(trainer)
+     })
+     app.patch('/trainer/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await trainerCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+    })
+    app.delete('/trainer/:id', async (req, res) => {
+      const { id } = req.params
+      const query = req.body
+
+      const result = await trainerCollection.deleteOne(query)
+
+      res.send(result)
+    })
+    /* ------ 🧑‍💼Trining type🧑‍💼 ------- */
+    // get all Trining Type
+    app.get('/trainingtype', async(req, res)=>{
+      const query = {}
+      const trainingtype = await trainingTypeCollection.find(query).toArray()
+      res.send(trainingtype)
+     })
+     app.post('/trainingtype', async(req, res)=>{
+      const query = req.body
+      const trainingtype = await trainingTypeCollection.insertOne(query)
+      res.send(trainingtype)
+     })
+     app.patch('/trainingtype/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await trainingTypeCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+    })
+    app.delete('/trainingtype/:id', async (req, res) => {
+      const { id } = req.params
+      const query = req.body
+
+      const result = await trainingTypeCollection.deleteOne(query)
+
+      res.send(result)
+    })
+    /* ------ 📝Blogs📝 ------- */
+    // get all Blogs
+    app.get('/blogs', async (req, res) => {
+      const query = {}
+      const blogs = await blogsCollection.find(query).toArray()
+
+      res.send(blogs)
+    })
+
+    // get a blog by id
+    app.get('/blogs/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const blog = await blogsCollection.findOne(query)
+      res.send(blog)
+    })
+
+    // create a new blog
+    app.post('/blogs', async (req, res) => {
+      const blog = req.body
+      const result = await blogsCollection.insertOne(blog)
+
+      res.send(result)
+    })
+
+    // update an blog by id
+    app.patch('/blogs/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await blogsCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+    })
+
+    // delete an blog by id
+    app.delete('/blogs/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await blogsCollection.deleteOne(query)
+
+      res.send(result)
+    })
+
+
+    /* ------ 🚀Projects🚀 ------- */
+    // get all projects
+    app.get('/projects', async (req, res) => {
+      const query = {}
+      const projects = await projectsCollection.find(query).toArray()
+
+      res.send(projects)
+    })
+
+    // get an project by id
+    app.get('/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await projectsCollection.findOne(query)
+      res.send(result)
+    })
+
+    // create a new project
+    app.post('/projects', async (req, res) => {
+      const project = req.body
+      const result = await projectsCollection.insertOne(project)
+
+      res.send(result)
+    })
+
+    // update an project by id
+    app.patch('/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await projectsCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+    })
+
+    // delete an project by id
+    app.delete('/projects/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await projectsCollection.deleteOne(query)
+
+      res.send(result)
+    })
+
 
     // update an user by id
     app.patch('/users/:id', async (req, res) => {
