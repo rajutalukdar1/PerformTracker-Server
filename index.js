@@ -18,32 +18,33 @@ async function run() {
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
     const taskCollection = client.db('performTracker').collection('task');
+    const tasksCollection = client.db('performTracker').collection('tasks');
     const blogsCollection = client.db('performTracker').collection('blogs');
     const projectsCollection = client.db('performTracker').collection('projects');
     const trainingCollection = client.db('performTracker').collection('training')
     const trainingTypeCollection = client.db('performTracker').collection('trainingType')
     const trainerCollection = client.db('performTracker').collection('trainer')
     const promotionCollection = client.db('performTracker').collection('promotion');
-    
+
 
     // get all task
     app.get('/promotion', async (req, res) => {
       const query = {}
-      const task = promotionCollection.find(query).sort({_id:-1});
+      const task = promotionCollection.find(query).sort({ _id: -1 });
       const services = await task.toArray();
 
       res.send(services)
     })
 
     // get task post
-    app.post('/promotion', async(req, res) =>{
+    app.post('/promotion', async (req, res) => {
       const user = req.body;
       console.log(user);
       const result = await promotionCollection.insertOne(user)
       res.send(result);
-  })
+    })
 
-  // get promotion delete
+    // get promotion delete
     app.delete('/promotion/:id', async (req, res) => {
       const { id } = req.params
       const query = { _id: ObjectId(id) }
@@ -64,7 +65,7 @@ async function run() {
       const result = await promotionCollection.updateOne(query, updatedDoc)
 
       res.send(result)
-      
+
     })
 
     // get all task
@@ -76,12 +77,12 @@ async function run() {
     })
 
     // get task post
-    app.post('/task', async(req, res) =>{
+    app.post('/task', async (req, res) => {
       const user = req.body;
       const result = await taskCollection.insertOne(user)
       res.send(result);
-  })
-  // update a task by id
+    })
+    // update a task by id
     app.patch('/task/:id', async (req, res) => {
       const { id } = req.params
       const updateInfo = req.body
@@ -92,10 +93,10 @@ async function run() {
       const result = await taskCollection.updateOne(query, updatedDoc)
 
       res.send(result)
-      
+
     })
 
-  // get task delete
+    // get task delete
     app.delete('/task/:id', async (req, res) => {
       const { id } = req.params
       const query = { _id: ObjectId(id) }
@@ -105,12 +106,12 @@ async function run() {
       res.send(result)
     })
     // get client post
-    app.post('/clients', async(req, res) =>{
+    app.post('/clients', async (req, res) => {
       const user = req.body;
       const result = await clientCollection.insertOne(user)
       res.send(result);
-  })
-    
+    })
+
 
     /* ------ 🤝Clients🤝 ------- */
     // get all Clients
@@ -311,8 +312,8 @@ async function run() {
     /* ------ 👷‍♀️👷‍♂️👨‍💼Users👷‍♀️👷‍♂️👨‍💼 ------- */
     // get user
     app.get('/users', async (req, res) => {
-      const {uid} = req.query
-      const query = {uid}
+      const { uid } = req.query
+      const query = { uid }
       const user = await usersCollection.findOne(query) || {}
       res.send(user)
     })
@@ -326,29 +327,30 @@ async function run() {
     })
     /* ------ 🧑‍💼Trining List🧑‍💼 ------- */
     // get all trainig list
-    app.get('/training', async(req, res)=>{
+    app.get('/training', async (req, res) => {
       const query = {}
       const training = await trainingCollection.find(query).toArray()
       res.send(training)
-     })
-     app.post('/training', async(req, res)=>{
+    })
+    app.post('/training', async (req, res) => {
       const query = req.body
       const training = await trainingCollection.insertOne(query)
       res.send(training)
-     })
+    })
+
     /* ------ 🧑‍💼Trining🧑‍💼 ------- */
     // get all Triner
-     app.get('/trainer', async(req, res)=>{
+    app.get('/trainer', async (req, res) => {
       const query = {}
       const trainer = await trainerCollection.find(query).toArray()
       res.send(trainer)
-     })
-     app.post('/trainer', async(req, res)=>{
+    })
+    app.post('/trainer', async (req, res) => {
       const query = req.body
       const trainer = await trainerCollection.insertOne(query)
       res.send(trainer)
-     })
-     app.patch('/trainer/:id', async (req, res) => {
+    })
+    app.patch('/trainer/:id', async (req, res) => {
       const { id } = req.params
       const updateInfo = req.body
 
@@ -370,17 +372,17 @@ async function run() {
     })
     /* ------ 🧑‍💼Trining type🧑‍💼 ------- */
     // get all Trining Type
-    app.get('/trainingtype', async(req, res)=>{
+    app.get('/trainingtype', async (req, res) => {
       const query = {}
       const trainingtype = await trainingTypeCollection.find(query).toArray()
       res.send(trainingtype)
-     })
-     app.post('/trainingtype', async(req, res)=>{
+    })
+    app.post('/trainingtype', async (req, res) => {
       const query = req.body
       const trainingtype = await trainingTypeCollection.insertOne(query)
       res.send(trainingtype)
-     })
-     app.patch('/trainingtype/:id', async (req, res) => {
+    })
+    app.patch('/trainingtype/:id', async (req, res) => {
       const { id } = req.params
       const updateInfo = req.body
 
@@ -502,6 +504,26 @@ async function run() {
     })
 
 
+    /* ------ 📝Tasks📝 ------- */
+    // get all tasks
+    app.get('/tasks', async (req, res) => {
+      const query = {}
+      const tasks = await tasksCollection.find(query).toArray()
+
+      res.send(tasks)
+    })
+
+    // get all tasks by projectId
+    app.get('/project-tasks/:id', async (req, res) => {
+      const {id} = req.params
+      const query = {projectId: id}
+      const tasks = await tasksCollection.find(query).toArray()
+
+      res.send(tasks)
+    })
+
+
+    /* ------ 👨‍👩‍👧‍👦Users👨‍👩‍👧‍👦 ------- */
     // update an user by id
     app.patch('/users/:id', async (req, res) => {
       const { id } = req.params
@@ -512,7 +534,7 @@ async function run() {
         $set: updateInfo
       }
       const result = await usersCollection.updateOne(query, updatedDoc)
-      
+
       res.send(result)
     })
 
@@ -529,7 +551,7 @@ async function run() {
 
       res.send(result)
     })
-    
+
     // get employees projects
     app.get('/employee/projects/:id', async (req, res) => {
       const { id } = req.params
@@ -548,7 +570,7 @@ async function run() {
       const query = { uid, role: "Admin" }
 
       const result = await usersCollection.findOne(query)
-      res.send({isAdmin: !!result})
+      res.send({ isAdmin: !!result })
     });
 
     // get client
@@ -557,7 +579,7 @@ async function run() {
       const query = { uid, role: "Client" }
 
       const result = await usersCollection.findOne(query)
-      res.send({isClient: !!result})
+      res.send({ isClient: !!result })
     });
 
 
