@@ -129,12 +129,10 @@ async function run() {
     // get an client by id
     app.patch('/clients/:id', async (req, res) => {
       const id = req.params.id;
-      const status = req.body.status
+      const client = req.body
       const query = { _id: ObjectId(id) }
       const updatedDoc = {
-          $set:{
-              status: status
-          }
+          $set: client
       }
       const result = await clientCollection.updateOne(query, updatedDoc);
       res.send(result);
