@@ -101,6 +101,15 @@ async function run() {
 
       res.send(result)
     })
+  // get task delete
+    app.delete('/clients/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await clientCollection.deleteOne(query)
+
+      res.send(result)
+    })
     // get client post
     app.post('/clients', async(req, res) =>{
       const user = req.body;
