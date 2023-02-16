@@ -127,6 +127,18 @@ async function run() {
       res.send(services);
     });
     // get an client by id
+    app.patch('/clients/:id', async (req, res) => {
+      const id = req.params.id;
+      const status = req.body.status
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+          $set:{
+              status: status
+          }
+      }
+      const result = await clientCollection.updateOne(query, updatedDoc);
+      res.send(result);
+  })
     app.get('/clients/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
