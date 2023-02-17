@@ -204,9 +204,10 @@ async function run() {
     app.get('/employee', async (req, res) => {
       const { email } = req.query
       const query = { email }
-
+      console.log(email);
       const result = await employeesCollection.findOne(query)
-      res.send(result)
+      res.send(result || {})
+      console.log(result);
     });
 
     /* ------ 📝Blogs📝 ------- */
