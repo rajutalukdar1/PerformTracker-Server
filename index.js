@@ -18,6 +18,7 @@ async function run() {
     const employeesCollection = client.db('performTracker').collection('employees')
     const clientCollection = client.db('performTracker').collection('clients');
     const taskCollection = client.db('performTracker').collection('task');
+    const tasksCollection = client.db('performTracker').collection('tasks');
     const blogsCollection = client.db('performTracker').collection('blogs');
     const projectsCollection = client.db('performTracker').collection('projects');
     const trainingCollection = client.db('performTracker').collection('training')
@@ -25,7 +26,6 @@ async function run() {
     const trainerCollection = client.db('performTracker').collection('trainer')
     const promotionCollection = client.db('performTracker').collection('promotion');
     const teamsCollection = client.db('performTracker').collection('teams');
-    const tasksCollection = client.db('performTracker').collection('tasks');
 
 
     // get all task
@@ -83,6 +83,7 @@ async function run() {
       const result = await taskCollection.insertOne(user)
       res.send(result);
     })
+    
     // update a task by id
     app.patch('/task/:id', async (req, res) => {
       const { id } = req.params
@@ -94,7 +95,6 @@ async function run() {
       const result = await taskCollection.updateOne(query, updatedDoc)
 
       res.send(result)
-
     })
 
     // get task delete
@@ -103,6 +103,15 @@ async function run() {
       const query = { _id: ObjectId(id) }
 
       const result = await taskCollection.deleteOne(query)
+
+      res.send(result)
+    })
+  // get task delete
+    app.delete('/clients/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await clientCollection.deleteOne(query)
 
       res.send(result)
     })
@@ -123,6 +132,16 @@ async function run() {
       res.send(services);
     });
     // get an client by id
+    app.patch('/clients/:id', async (req, res) => {
+      const id = req.params.id;
+      const client = req.body
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+          $set: client
+      }
+      const result = await clientCollection.updateOne(query, updatedDoc);
+      res.send(result);
+  })
     app.get('/clients/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
@@ -338,6 +357,7 @@ async function run() {
       const training = await trainingCollection.insertOne(query)
       res.send(training)
     })
+
     /* ------ 🧑‍💼Trining🧑‍💼 ------- */
     // get all Triner
     app.get('/trainer', async (req, res) => {
@@ -504,6 +524,26 @@ async function run() {
     })
 
 
+    /* ------ 📝Tasks📝 ------- */
+    // get all tasks
+    app.get('/tasks', async (req, res) => {
+      const query = {}
+      const tasks = await tasksCollection.find(query).toArray()
+
+      res.send(tasks)
+    })
+
+    // get all tasks by projectId
+    app.get('/project-tasks/:id', async (req, res) => {
+      const {id} = req.params
+      const query = {projectId: id}
+      const tasks = await tasksCollection.find(query).toArray()
+
+      res.send(tasks)
+    })
+
+
+    /* ------ 👨‍👩‍👧‍👦Users👨‍👩‍👧‍👦 ------- */
     // update an user by id
     app.patch('/users/:id', async (req, res) => {
       const { id } = req.params
