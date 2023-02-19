@@ -83,7 +83,7 @@ async function run() {
       const result = await taskCollection.insertOne(user)
       res.send(result);
     })
-    
+
     // update a task by id
     app.patch('/task/:id', async (req, res) => {
       const { id } = req.params
@@ -106,7 +106,8 @@ async function run() {
 
       res.send(result)
     })
-  // get task delete
+
+    // get task delete
     app.delete('/clients/:id', async (req, res) => {
       const { id } = req.params
       const query = { _id: ObjectId(id) }
@@ -115,6 +116,7 @@ async function run() {
 
       res.send(result)
     })
+
     // get client post
     app.post('/clients', async (req, res) => {
       const user = req.body;
@@ -131,17 +133,19 @@ async function run() {
       const services = await cursor.toArray();
       res.send(services);
     });
+
     // get an client by id
     app.patch('/clients/:id', async (req, res) => {
       const id = req.params.id;
       const client = req.body
       const query = { _id: ObjectId(id) }
       const updatedDoc = {
-          $set: client
+        $set: client
       }
       const result = await clientCollection.updateOne(query, updatedDoc);
       res.send(result);
-  })
+    })
+
     app.get('/clients/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
@@ -157,7 +161,6 @@ async function run() {
       const result = await clientCollection.findOne(query)
       res.send(result)
     });
-
 
     app.get('/client/projects/:id', async (req, res) => {
       const { id } = req.params
@@ -175,7 +178,8 @@ async function run() {
     /* ------ 🧑‍💼Employees🧑‍💼 ------- */
     // get all employees
     app.get('/employees', async (req, res) => {
-      const query = {}
+      const { name } = req.query
+      const query = name ? { name: { '$regex': name, '$options': 'i' } } : {}
       const employees = await employeesCollection.find(query).toArray()
       res.send(employees)
     })
@@ -220,7 +224,7 @@ async function run() {
       res.send(result)
     });
 
-    // find each the employee in email
+    // find each the employee by email
     app.get('/employee', async (req, res) => {
       const { email } = req.query
       const query = { email }
@@ -345,6 +349,8 @@ async function run() {
 
       res.send(result)
     })
+
+
     /* ------ 🧑‍💼Trining List🧑‍💼 ------- */
     // get all trainig list
     app.get('/training', async (req, res) => {
@@ -352,6 +358,7 @@ async function run() {
       const training = await trainingCollection.find(query).toArray()
       res.send(training)
     })
+
     app.post('/training', async (req, res) => {
       const query = req.body
       const training = await trainingCollection.insertOne(query)
@@ -365,11 +372,13 @@ async function run() {
       const trainer = await trainerCollection.find(query).toArray()
       res.send(trainer)
     })
+
     app.post('/trainer', async (req, res) => {
       const query = req.body
       const trainer = await trainerCollection.insertOne(query)
       res.send(trainer)
     })
+
     app.patch('/trainer/:id', async (req, res) => {
       const { id } = req.params
       const updateInfo = req.body
@@ -382,6 +391,7 @@ async function run() {
 
       res.send(result)
     })
+
     app.delete('/trainer/:id', async (req, res) => {
       const { id } = req.params
       const query = req.body
@@ -390,6 +400,8 @@ async function run() {
 
       res.send(result)
     })
+
+
     /* ------ 🧑‍💼Trining type🧑‍💼 ------- */
     // get all Trining Type
     app.get('/trainingtype', async (req, res) => {
@@ -397,11 +409,13 @@ async function run() {
       const trainingtype = await trainingTypeCollection.find(query).toArray()
       res.send(trainingtype)
     })
+
     app.post('/trainingtype', async (req, res) => {
       const query = req.body
       const trainingtype = await trainingTypeCollection.insertOne(query)
       res.send(trainingtype)
     })
+
     app.patch('/trainingtype/:id', async (req, res) => {
       const { id } = req.params
       const updateInfo = req.body
@@ -414,6 +428,7 @@ async function run() {
 
       res.send(result)
     })
+
     app.delete('/trainingtype/:id', async (req, res) => {
       const { id } = req.params
       const query = req.body
@@ -422,6 +437,8 @@ async function run() {
 
       res.send(result)
     })
+
+
     /* ------ 📝Blogs📝 ------- */
     // get all Blogs
     app.get('/blogs', async (req, res) => {
@@ -535,8 +552,8 @@ async function run() {
 
     // get all tasks by projectId
     app.get('/project-tasks/:id', async (req, res) => {
-      const {id} = req.params
-      const query = {projectId: id}
+      const { id } = req.params
+      const query = { projectId: id }
       const tasks = await tasksCollection.find(query).toArray()
 
       res.send(tasks)
@@ -646,6 +663,7 @@ async function run() {
       const blog = await tasksCollection.findOne(query)
       res.send(blog)
     })
+
     app.get('/project-tasks/:id', async (req, res) => {
       const { id } = req.params
       const query = { _id: ObjectId(id) }
@@ -661,6 +679,7 @@ async function run() {
 
       res.send(result)
     })
+
     // // update an user by uid
     // app.patch('/project-tasks/id', async (req, res) => {
     //   const { id } = req.params
