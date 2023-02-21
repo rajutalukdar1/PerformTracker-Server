@@ -559,6 +559,38 @@ async function run() {
       res.send(tasks)
     })
 
+    // create a new task
+    app.post('/tasks', async (req, res) => {
+      const task = req.body
+      const result = await tasksCollection.insertOne(task)
+
+      res.send(result)
+    })
+
+    // update an task by id
+    app.patch('/tasks/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await tasksCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+    })
+
+    // delete an task by id
+    app.delete('/tasks/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const result = await tasksCollection.deleteOne(query)
+
+      res.send(result)
+    })
+
 
     /* ------ 👨‍👩‍👧‍👦Users👨‍👩‍👧‍👦 ------- */
     // update an user by id
