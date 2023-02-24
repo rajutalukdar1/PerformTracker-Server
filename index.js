@@ -93,7 +93,6 @@ async function run() {
         $set: updateInfo
       }
       const result = await taskCollection.updateOne(query, updatedDoc)
-
       res.send(result)
     })
 
@@ -127,7 +126,7 @@ async function run() {
 
     /* ------ 🤝Clients🤝 ------- */
     // get all Clients
-    app.get('/clients', async (req, res) => {
+    app.get('/client', async (req, res) => {
       const query = {}
       const cursor = clientCollection.find(query).sort({ _id: -1 });
       const services = await cursor.toArray();
@@ -135,6 +134,7 @@ async function run() {
     });
 
     // get an client by id
+
     app.patch('/clients/:id', async (req, res) => {
       const id = req.params.id;
       const client = req.body
@@ -146,7 +146,8 @@ async function run() {
       res.send(result);
     })
 
-    app.get('/clients/:id', async (req, res) => {
+    app.get('/client/:id', async (req, res) => {
+
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const service = await clientCollection.findOne(query);
@@ -161,6 +162,20 @@ async function run() {
       const result = await clientCollection.findOne(query)
       res.send(result)
     });
+
+    // update the client in database
+    app.patch('/client/:id', async (req, res) => {
+      const { id } = req.params
+      const updateInfo = req.body
+      const query = { _id: ObjectId(id) }
+      const updatedDoc = {
+        $set: updateInfo
+      }
+      const result = await clientCollection.updateOne(query, updatedDoc)
+
+      res.send(result)
+
+    })
 
     app.get('/client/projects/:id', async (req, res) => {
       const { id } = req.params
