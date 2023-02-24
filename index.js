@@ -93,7 +93,6 @@ async function run() {
         $set: updateInfo
       }
       const result = await taskCollection.updateOne(query, updatedDoc)
-
       res.send(result)
     })
 
@@ -108,7 +107,7 @@ async function run() {
     })
 
     // get task delete
-    app.delete('/client/:id', async (req, res) => {
+    app.delete('/clients/:id', async (req, res) => {
       const { id } = req.params
       const query = { _id: ObjectId(id) }
 
@@ -118,7 +117,7 @@ async function run() {
     })
 
     // get client post
-    app.post('/client', async (req, res) => {
+    app.post('/clients', async (req, res) => {
       const user = req.body;
       const result = await clientCollection.insertOne(user)
       res.send(result);
@@ -135,7 +134,8 @@ async function run() {
     });
 
     // get an client by id
-    app.patch('/client/:id', async (req, res) => {
+
+    app.patch('/clients/:id', async (req, res) => {
       const id = req.params.id;
       const client = req.body
       const query = { _id: ObjectId(id) }
@@ -147,6 +147,7 @@ async function run() {
     })
 
     app.get('/client/:id', async (req, res) => {
+
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const service = await clientCollection.findOne(query);
