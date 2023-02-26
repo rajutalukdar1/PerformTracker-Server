@@ -206,6 +206,7 @@ async function run() {
 
       const result = await employeesCollection.findOne(query)
       res.send(result)
+      console.log(result);
     })
 
     // create a new employee
@@ -691,6 +692,15 @@ async function run() {
       const result = await teamsCollection.insertOne(blog)
 
       res.send(result)
+    })
+
+     // get a blog by id
+     app.get('/leads/:id', async (req, res) => {
+      const { id } = req.params
+      const query = { _id: ObjectId(id) }
+
+      const blog = await projectsCollection.findOne(query)
+      res.send(blog)
     })
 
     /* ------ 📝tasks📝 ------- */
