@@ -630,14 +630,35 @@ async function run() {
       const { id } = req.params;
       const query = {
         $or: [
-          { team: { $elemMatch: { uid: id } } },
-          {
-            assignedleaders: { $elemMatch: { uid: id } },
-          },
+          { members: { $elemMatch: { uid: id } } },
+          { leaders: { $elemMatch: { uid: id } } },
         ],
       };
-      const result = await projectsCollection.find(query).toArray();
-      res.send(result);
+      const projects = (await teamsCollection
+        .aggregate([
+          {
+            $set: {
+              team_id: {$toString : '$_id' },
+            },
+          },
+          {
+            $lookup: {
+              from: "projects",
+              localField: "team_id",
+              foreignField: "teamId",
+              as: "projects",
+            },
+          },
+          {
+            $project: {
+              "_id": 0,
+              "projects": 1
+            }
+          }
+        ])
+        .toArray())[0].projects;
+      // const result = await teamsCollection.find(query).toArray();
+      res.send(projects);
     });
 
     // get admin
@@ -656,6 +677,15 @@ async function run() {
 
       const result = await usersCollection.findOne(query);
       res.send({ isClient: !!result });
+    });
+
+    // get an users ID
+    app.get("/user", async (req, res) => {
+      const { uid } = req.query;
+      const query = { uid };
+
+      const result = await usersCollection.findOne(query);
+      res.send(result || {});
     });
 
     /* ------ 📝teams📝 ------- */
@@ -721,10 +751,9 @@ async function run() {
     /* ------ Dashboard ------- */
     // get all data for admin dashboard
     app.get("/dashboard/admin", async (req, res) => {
-
-      const totalClients = await clientCollection.countDocuments()
-      const totalEmployees = await employeesCollection.countDocuments()
-      const promotedEmployees = await promotionCollection.countDocuments()
+      const totalClients = await clientCollection.countDocuments();
+      const totalEmployees = await employeesCollection.countDocuments();
+      const promotedEmployees = await promotionCollection.countDocuments();
       const tasksData = (
         await tasksCollection
           .aggregate([
@@ -752,7 +781,7 @@ async function run() {
             {
               $addFields: {
                 upcomingTasks: 3,
-              }
+              },
             },
             {
               $project: {
@@ -789,7 +818,13 @@ async function run() {
           ])
           .toArray()
       )[0];
-      const adminData = { tasksData, projectsData, totalClients, totalEmployees, promotedEmployees };
+      const adminData = {
+        tasksData,
+        projectsData,
+        totalClients,
+        totalEmployees,
+        promotedEmployees,
+      };
 
       res.send(adminData);
     });
